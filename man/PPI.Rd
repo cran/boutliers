@@ -24,6 +24,6 @@ Impact of patient and public involvement on enrolment and
 retention in clinical trials: systematic review and meta-analysis.
 \emph{BMJ.}
 \strong{363}: k4738.
-\url{https://doi.org/10.1136/bmj.k4738}
+\doi{10.1136/bmj.k4738}
 }
 \keyword{datasets}

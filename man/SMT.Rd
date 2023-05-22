@@ -26,6 +26,6 @@ the treatment of chronic low back pain: systematic review
 and meta-analysis of randomised controlled trials.
 \emph{BMJ.}
 \strong{364}: l689.
-\url{https://doi.org/10.1136/bmj.l689}
+\doi{10.1136/bmj.l689}
 }
 \keyword{datasets}

@@ -9,7 +9,7 @@ LRT(y, v, B=2000, alpha=0.05)
 
 \item{v}{A vector of the variance estimate of \code{y}}
 
-\item{B}{The number of bootstrap resampling (defalt: 2000)}
+\item{B}{The number of bootstrap resampling (default: 2000)}
 
 \item{alpha}{The significance level (default: 0.05)}
 }
@@ -26,14 +26,10 @@ Results of the likelihood ratio tests involving bootstrap p-values. The outputs 
 Implementing the likelihood ratio tests using the mean-shifted model for the DerSimonian-Laird-type random-effects model. The bootstrap p-values are provided.
 }
 \examples{
+require(metafor)
 data(SMT)
-attach(SMT)
 
-dat <- convert_mean(n1, m1, s1, n2, m2, s2, type="MD")
+edat2 <- escalc(m1i=m1,sd1i=s1,n1i=n1,m2i=m2,sd2i=s2,n2i=n2,measure="MD",data=SMT)
 
-LRT(dat$y, dat$v, B=100)
-# For quick demonstration, B is set to 100.
-# Practically, B should be set to >= 1000 (default is 2000).
-
-detach(SMT)
+LRT(edat2$yi, edat2$vi, B=10)   # This is an example command for illustration. B should be >= 1000.
 }

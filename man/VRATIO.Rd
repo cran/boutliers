@@ -9,7 +9,7 @@ VRATIO(y, v, B=2000, alpha=0.05)
 
 \item{v}{A vector of the variance estimate of \code{y}}
 
-\item{B}{The number of bootstrap resampling (defalt: 2000)}
+\item{B}{The number of bootstrap resampling (default: 2000)}
 
 \item{alpha}{The bootstrap percentile to be outputted (default: 0.05)}
 }
@@ -27,15 +27,11 @@ The variance ratio influential statistics by leave-one-out analysis and their bo
 Calculating the variance ratio influential statistics by leave-one-out analysis and the percentiles of their bootstrap distributions.
 }
 \examples{
+require(metafor)
 data(finasteride)
-attach(finasteride)
 
-dat <- convert_mean(n1, m1, s1, n0, m0, s0, type="MD")
-print(dat)
+edat3 <- escalc(m1i=m1,sd1i=s1,n1i=n1,m2i=m0,sd2i=s0,n2i=n0,measure="MD",data=finasteride)
 
-VRATIO(dat$y, dat$v, B=100)
-# For quick demonstration, B is set to 100.
-# Practically, B should be set to >= 1000 (default is 2000).
-
-detach(finasteride)
+VRATIO(edat3$yi, edat3$vi, B=10)
+# This is an example command for illustration. B should be >= 1000.
 }

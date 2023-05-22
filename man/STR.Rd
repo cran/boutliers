@@ -9,7 +9,7 @@ STR(y, v, B=2000, alpha=0.95)
 
 \item{v}{A vector of the variance estimate of \code{y}}
 
-\item{B}{The number of bootstrap resampling (defalt: 2000)}
+\item{B}{The number of bootstrap resampling (default: 2000)}
 
 \item{alpha}{The bootstrap percentiles to be outputted; 0.5(1-alpha)th and (1-0.5(1-alpha))th pecentiles. Default is 0.95; 2.5th and 97.5th percentiles are calculated.}
 }
@@ -26,15 +26,10 @@ The studentized residuals by leave-one-out analysis. The outputs are ordered by 
 Calculating the studentized residuals by leave-one-out analysis (studentized deleted residuals) and the percentiles of their bootstrap distributions.
 }
 \examples{
+require(metafor)
 data(PPI)
-attach(PPI)
 
-dat <- convert_bin(d1, n1, d2, n2, type = "logOR")
-print(dat)
+edat1 <- escalc(ai=d1,n1i=n1,ci=d2,n2i=n2,measure="OR",data=PPI)
 
-STR(dat$y, dat$v, B=100)
-# For quick demonstration, B is set to 100.
-# Practically, B should be set to >= 1000 (default is 2000).
-
-detach(PPI)
+STR(edat1$yi,edat1$vi,B=10)   # This is an example command for illustration. B should be >= 1000.
 }

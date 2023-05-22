@@ -24,7 +24,7 @@ Gormley, G. J., Stoner, E., Bruskewitz, R. C., et al. (1992).
 The effect of finasteride in men with benign prostatic hyperplasia. The Finasteride Study Group.
 \emph{New England Journal of Medicine.}
 \strong{327}: 1185-1191.
-\url{https://www.nejm.org/doi/full/10.1056/NEJM199210223271701}
+\doi{10.1056/nejm199210223271701}
 
 Gould, A. L. (1998). 
 Multi-centre trial analysis revisited.

@@ -2,16 +2,22 @@
 \alias{LRT}
 \title{Likelihood ratio test using a mean-shifted model}
 \usage{
-LRT(y, v, B=2000, alpha=0.05)
+LRT(y, v, model="RE", data, B=2000, alpha=0.05, seed=123456)
 }
 \arguments{
 \item{y}{A vector of the outcome measure estimates (e.g., MD, SMD, log OR, log RR, RD)}
 
 \item{v}{A vector of the variance estimate of \code{y}}
 
+\item{model}{A logical value specifying the pooling model (\code{RE}: random-effects model, \code{FE}: fixed-effect model)}
+
+\item{data}{An optional data frame containing the variables \code{y} and \code{v}.}
+
 \item{B}{The number of bootstrap resampling (default: 2000)}
 
 \item{alpha}{The significance level (default: 0.05)}
+
+\item{seed}{A numeric value that determines the random seed for reproducibility (default: 123456).}
 }
 \value{
 Results of the likelihood ratio tests involving bootstrap p-values. The outputs are ordered by the p-values.
@@ -23,7 +29,7 @@ Results of the likelihood ratio tests involving bootstrap p-values. The outputs 
 }
 }
 \description{
-Implementing the likelihood ratio tests using the mean-shifted model for the DerSimonian-Laird-type random-effects model. The bootstrap p-values are provided.
+Implementing the likelihood ratio tests using the mean-shifted model. The bootstrap p-values are provided.
 }
 \examples{
 require(metafor)
@@ -31,5 +37,11 @@ data(SMT)
 
 edat2 <- escalc(m1i=m1,sd1i=s1,n1i=n1,m2i=m2,sd2i=s2,n2i=n2,measure="MD",data=SMT)
 
-LRT(edat2$yi, edat2$vi, B=10)   # This is an example command for illustration. B should be >= 1000.
+LRT(yi, vi, data=edat2, B=10)
+# Random-effects model.
+# This is an example command for illustration. B should be >= 1000.
+
+LRT(yi, vi, data=edat2, model="FE", B=10)
+# Fixed-effect model.
+# This is an example command for illustration. B should be >= 1000.
 }

@@ -1,70 +1,162 @@
-LRT <- function(y, v, B=2000, alpha=0.05){
+LRT <- function(y, v, model="RE", data=NULL, B=2000, alpha=0.05, seed=123456){
 
-	ML0 <- ML(y,v)
+	set.seed(seed)
 
-	mu0 <- ML0$mu
-	v0 <- v + ML0$V0
-	mlike0 <- ML0$Loglikelihood		# loglikelihood under H0
+	if(is.null(data)==FALSE){
 
-	n <- length(y)
-	LR <- P <- numeric(n)
+		data <- data.frame(data)
 
-	for(i in 1:n){
-	
-		yi <- y[c(i,setdiff(1:n,i))]
-		vi <- v[c(i,setdiff(1:n,i))]
-	
-		mlike1 <- SML(yi,vi)$Loglikelihood
-                              
-		LR0 <- -2*(mlike0 - mlike1)		# LRT statistic
-
-		LR[i] <- LR0
-		P[i] <- 1 - pchisq(LR0,df=1)
+		y <- data[, deparse(substitute(y))]
+		v <- data[, deparse(substitute(v))]
 
 	}
-	
-	LR.b <- matrix(numeric(n*B),B)
 
-	for(b in 1:B){
-	
-		y.b <- rnorm(n, mean=mu0, sd=sqrt(v0))
-		
-		mlike0.b <- ML(y.b,v)$Loglikelihood
-		
+	if(model=="RE"){
+
+		ML0 <- ML(y,v)
+
+		mu0 <- ML0$mu
+		v0 <- v + ML0$V0
+		mlike0 <- ML0$Loglikelihood		# loglikelihood under H0
+
+		n <- length(y)
+		LR <- P <- numeric(n)
+
 		for(i in 1:n){
 	
-			yi <- y.b[c(i,setdiff(1:n,i))]
+			yi <- y[c(i,setdiff(1:n,i))]
 			vi <- v[c(i,setdiff(1:n,i))]
 	
-			mlike1.b <- SML(yi,vi)$Loglikelihood
+			mlike1 <- SML(yi,vi)$Loglikelihood
                               
-			LR0.b <- -2*(mlike0.b - mlike1.b)		# LRT statistic
-			LR.b[b,i] <- LR0.b
+			LR0 <- -2*(mlike0 - mlike1)		# LRT statistic
+
+			LR[i] <- LR0
+			P[i] <- 1 - pchisq(LR0,df=1)
 
 		}
 	
-		print1 <- paste0("The ",b,"th bootstrap is completed.")
-		if(b%%100==0) print(print1)
-		
-	}
-		
-	P <- Q <- numeric(n)	
-		
-	for(i in 1:n){
-	
-		X.b <- LR.b[,i]
-		P[i] <- QT(X.b, LR[i])
-		Q[i] <- as.numeric(quantile(X.b,(1-alpha)))
-	
-	}
+		LR.b <- matrix(numeric(n*B),B)
 
-	id <- 1:n
-	R <- data.frame(id,LR,Q,P)
-	R <- R[order(P),]
+		for(i in 1:n){
+	
+			y_i <- y[setdiff(1:n,i)]
+			v_i <- v[setdiff(1:n,i)]
 
-	return(R)
+			vi <- v[c(i,setdiff(1:n,i))]
+
+			MLi0 <- ML(y_i,v_i)
+
+			for(b in 1:B){
+	
+				y.b <- rnorm(n, mean=MLi0$mu, sd=sqrt(v+MLi0$V0))
+				y.b <- y.b[c(i,setdiff(1:n,i))]
+		
+				mlike0.b <- ML(y.b,vi)$Loglikelihood
+				mlike1.b <- SML(y.b,vi)$Loglikelihood
+                              
+				LR0.b <- -2*(mlike0.b - mlike1.b)		# LRT statistic
+				LR.b[b,i] <- LR0.b
+
+			}
+	
+			print1 <- paste0("The bootstrap for ",i,"th study is completed.")
+			if(b%%100==0) message(print1)
+		
+		}
+		
+		P <- Q <- numeric(n)	
+		
+		for(i in 1:n){
+	
+			X.b <- LR.b[,i]
+			P[i] <- QT(X.b, LR[i])
+			Q[i] <- as.numeric(quantile(X.b,(1-alpha)))
+	
+		}
+
+		id <- 1:n
+		R <- data.frame(id,LR,Q,P)
+		R <- R[order(P),]
+
+		return(R)
+
+	}
+	
+	if(model=="FE"){
+
+		ML0 <- ML_FE(y,v)
+
+		mu0 <- ML0$mu
+		v0 <- v + ML0$V0
+		mlike0 <- ML0$Loglikelihood		# loglikelihood under H0
+
+		n <- length(y)
+		LR <- P <- numeric(n)
+
+		for(i in 1:n){
+	
+			yi <- y[c(i,setdiff(1:n,i))]
+			vi <- v[c(i,setdiff(1:n,i))]
+	
+			mlike1 <- SML_FE(yi,vi)$Loglikelihood
+                              
+			LR0 <- -2*(mlike0 - mlike1)		# LRT statistic
+
+			LR[i] <- LR0
+			P[i] <- 1 - pchisq(LR0,df=1)
+
+		}
+	
+		LR.b <- matrix(numeric(n*B),B)
+
+		for(i in 1:n){
+	
+			y_i <- y[setdiff(1:n,i)]
+			v_i <- v[setdiff(1:n,i)]
+
+			vi <- v[c(i,setdiff(1:n,i))]
+
+			MLi0 <- ML_FE(y_i,v_i)
+
+			for(b in 1:B){
+	
+				y.b <- rnorm(n, mean=MLi0$mu, sd=sqrt(v+MLi0$V0))
+				y.b <- y.b[c(i,setdiff(1:n,i))]
+			
+				mlike0.b <- ML_FE(y.b,vi)$Loglikelihood
+				mlike1.b <- SML_FE(y.b,vi)$Loglikelihood
+                              
+				LR0.b <- -2*(mlike0.b - mlike1.b)		# LRT statistic
+				LR.b[b,i] <- LR0.b
+
+			}
+	
+			print1 <- paste0("The bootstrap for ",i,"th study is completed.")
+			if(b%%100==0) message(print1)
+		
+		}
+		
+		P <- Q <- numeric(n)	
+		
+		for(i in 1:n){
+	
+			X.b <- LR.b[,i]
+			P[i] <- QT(X.b, LR[i])
+			Q[i] <- as.numeric(quantile(X.b,(1-alpha)))
+	
+		}
+
+		id <- 1:n
+		R <- data.frame(id,LR,Q,P)
+		R <- R[order(P),]
+
+		return(R)
+
+	}
 
 }
+
 
 ML <- function(y,v,maxitr=200){
 

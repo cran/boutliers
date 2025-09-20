@@ -20,6 +20,12 @@ data(PPI)
   }
 }
 \references{
+Nakamura, R., and Noma, H. (2021). 
+Detection of outlying centers and influence diagnostics for the analysis of multicenter clinical trials (in Japanese).
+\emph{Japanese Journal of Biometrics.}
+\strong{41}(2): 117-136.
+\doi{10.5691/jjb.41.117}
+
 Gormley, G. J., Stoner, E., Bruskewitz, R. C., et al. (1992). 
 The effect of finasteride in men with benign prostatic hyperplasia. The Finasteride Study Group.
 \emph{New England Journal of Medicine.}

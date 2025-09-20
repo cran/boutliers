@@ -1,20 +1,23 @@
-VRATIO <- function(y, v, B=2000, alpha=0.05){
+VRATIO <- function(y, v, method="REML", data=NULL, B=2000, alpha=0.05, seed=123456){
 
-	reml1 <- rma(yi=y,vi=v)
+	set.seed(seed)
+
+	if(is.null(data)==FALSE){
+
+		data <- data.frame(data)
+
+		y <- data[, deparse(substitute(y))]
+		v <- data[, deparse(substitute(v))]
+
+	}
+
+	reml1 <- rma(yi=y,vi=v,method=method)
 	
 	mu0 <- as.numeric(reml1$beta)
 	v0 <- v + reml1$tau2
 
 	V0 <- reml1$tau2
 	V1 <- reml1$se^2
-
-	#reml1 <- REML(y,v)
-	
-	#mu0 <- reml1$mu
-	#v0 <- v + reml1$V0
-
-	#V0 <- reml1$V0
-	#V1 <- reml1$V1
 
 	n <- length(y)
 	VR <- TR <- numeric(n)
@@ -24,12 +27,7 @@ VRATIO <- function(y, v, B=2000, alpha=0.05){
 		y_i <- y[setdiff(1:n,i)]
 		v_i <- v[setdiff(1:n,i)]
 	
-		#reml_i <- REML(y_i,v_i)
-		
-		#VR[i] <- reml_i$V1 / V1
-		#TR[i] <- reml_i$V0 / V0
-		
-		reml_i <- rma(yi=y_i,vi=v_i)
+		reml_i <- rma(yi=y_i,vi=v_i,method=method)
 		
 		VR[i] <- reml_i$se^2 / V1
 		TR[i] <- reml_i$tau2 / V0		
@@ -38,28 +36,29 @@ VRATIO <- function(y, v, B=2000, alpha=0.05){
                               
 	VR.b <- TR.b <- matrix(numeric(n*B),B)
 
-	for(b in 1:B){
+	for(i in 1:n){
 	
-		y.b <- rnorm(n, mean=mu0, sd=sqrt(v0))
-		reml.b <- REML(y.b,v)
-		
-		V0.b <- reml.b$V0
-		V1.b <- reml.b$V1
-		
-		for(i in 1:n){
+		y_i <- y[setdiff(1:n,i)]
+		v_i <- v[setdiff(1:n,i)]
 	
-			y_i <- y.b[setdiff(1:n,i)]
-			v_i <- v[setdiff(1:n,i)]
+		reml_i <- rma(yi=y_i,vi=v_i,method=method)
 	
-			reml_i <- REML(y_i,v_i)
+		for(b in 1:B){
+	
+			y.b <- rnorm(n, mean=reml_i$beta, sd=sqrt(v+reml_i$tau2))
 		
-			VR.b[b,i] <- reml_i$V1 / V1.b
-			TR.b[b,i] <- reml_i$V0 / V0.b
+			y.b_i <- y.b[setdiff(1:n,i)]
+	
+			reml.b_1 <- rma(yi=y.b,vi=v,method=method)
+			reml.b_0 <- rma(yi=y.b_i,vi=v_i,method=method)
+		
+			VR.b[b,i] <- reml.b_0$se^2 / (reml.b_1$se^2)
+			TR.b[b,i] <- reml.b_0$tau2 / reml.b_1$tau2
 
 		}
 	
-		print1 <- paste0("The ",b,"th bootstrap is completed.")
-		if(b%%100==0) print(print1)
+		print1 <- paste0("The bootstrap for ",i,"th study is completed.")
+		if(b%%100==0) message(print1)
 
 	}
 		

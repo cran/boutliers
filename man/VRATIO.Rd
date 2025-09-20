@@ -2,16 +2,22 @@
 \alias{VRATIO}
 \title{Variance ratio influential statistics}
 \usage{
-VRATIO(y, v, B=2000, alpha=0.05)
+VRATIO(y, v, method="REML", data, B=2000, alpha=0.05, seed=123456)
 }
 \arguments{
 \item{y}{A vector of the outcome measure estimates (e.g., MD, SMD, log OR, log RR, RD)}
 
 \item{v}{A vector of the variance estimate of \code{y}}
 
+\item{method}{A logical value specifying the estimation method (default: \code{REML}). The same options as those available for the \code{method} argument of the \code{rma} function in the \code{metafor} package can be used (e.g., \code{FE} for the fixed-effect model, \code{SJ} for the Sidik–Jonkman method, and \code{PM} for the Paule–Mandel method).}
+
+\item{data}{An optional data frame containing the variables \code{y} and \code{v}.}
+
 \item{B}{The number of bootstrap resampling (default: 2000)}
 
 \item{alpha}{The bootstrap percentile to be outputted (default: 0.05)}
+
+\item{seed}{A numeric value that determines the random seed for reproducibility (default: 123456).}
 }
 \value{
 The variance ratio influential statistics by leave-one-out analysis and their bootstrap percentiles. The outputs are ordered by the sizes of the variance ratio statistics.
@@ -30,8 +36,9 @@ Calculating the variance ratio influential statistics by leave-one-out analysis 
 require(metafor)
 data(finasteride)
 
-edat3 <- escalc(m1i=m1,sd1i=s1,n1i=n1,m2i=m0,sd2i=s0,n2i=n0,measure="MD",data=finasteride)
+edat3 <- escalc(m1i=m1,sd1i=s1,n1i=n1,m2i=m0,sd2i=s0,n2i=n0,
+measure="MD",data=finasteride)
 
-VRATIO(edat3$yi, edat3$vi, B=10)
+VRATIO(yi, vi, data=edat3, B=10)
 # This is an example command for illustration. B should be >= 1000.
 }

@@ -1,5 +1,7 @@
 LRT <- function(y, v, model="RE", data=NULL, B=2000, alpha=0.05, seed=123456){
 
+	call <- match.call()
+
 	set.seed(seed)
 
 	if(is.null(data)==FALSE){
@@ -76,10 +78,16 @@ LRT <- function(y, v, model="RE", data=NULL, B=2000, alpha=0.05, seed=123456){
 		}
 
 		id <- 1:n
-		R <- data.frame(id,LR,Q,P)
-		R <- R[order(P),]
 
-		return(R)
+		res <- list(
+			call = call,
+			id = id,
+			LR  = LR,
+			Q  = Q,
+			P  = P
+			)
+		class(res) <- "LRT"
+		return(res)
 
 	}
 	
@@ -148,10 +156,16 @@ LRT <- function(y, v, model="RE", data=NULL, B=2000, alpha=0.05, seed=123456){
 		}
 
 		id <- 1:n
-		R <- data.frame(id,LR,Q,P)
-		R <- R[order(P),]
-
-		return(R)
+		
+		res <- list(
+			call = call,
+			id = id,
+			LR  = LR,
+			Q  = Q,
+			P  = P
+			)
+		class(res) <- "LRT"
+		return(res)
 
 	}
 
@@ -548,5 +562,27 @@ SML_FE <- function(y,v,maxitr=200){
 		
 }
 
+
+print.LRT <- function(x, ...) {
+
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+
+  cat("Bootstrap-based influence statistics:\n", sep = "")
+
+  id  <- x$id
+  LR  <- x$LR
+  Q  <- x$Q
+  P  <- x$P
+
+  tab <- data.frame(id,LR,Q,P)
+  tab <- tab[order(P),]
+
+  tab <- round(tab, 3)
+  print(tab)
+  invisible(x)
+  
+}
 
 

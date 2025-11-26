@@ -1,5 +1,7 @@
 VRATIO <- function(y, v, method="REML", data=NULL, B=2000, alpha=0.05, seed=123456){
 
+	call <- match.call()
+
 	set.seed(seed)
 
 	if(is.null(data)==FALSE){
@@ -78,14 +80,51 @@ VRATIO <- function(y, v, method="REML", data=NULL, B=2000, alpha=0.05, seed=1234
 	}
 
 	id <- 1:n
-	
-	R1 <- data.frame(id,VR,Q1)
-	R1 <- R1[order(VR),]
 
-	R2 <- data.frame(id,TR,Q2)
-	R2 <- R2[order(TR),]
+	res <- list(
+		call = call,
+		id = id,
+		VR  = VR,
+		TR  = TR,
+		Q1  = Q1,
+		Q2  = Q2
+		)
+	class(res) <- "VRATIO"
+	return(res)
 
-	return(list(VRATIO=R1,TAU2RATIO=R2))
+}
 
+
+print.VRATIO <- function(x, ...) {
+
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+
+  id  <- x$id
+  VR  <- x$VR
+  TR  <- x$TR
+  Q1  <- x$Q1
+  Q2  <- x$Q2
+
+  tab1 <- data.frame(id,VR,Q1)
+  tab2 <- data.frame(id,TR,Q2)
+
+  tab1 <- tab1[order(VR),]
+  tab2 <- tab2[order(TR),]
+
+  tab1 <- round(tab1, 3)
+  tab2 <- round(tab2, 3)
+
+  cat("Bootstrap-based influence statistics (VRATIO):\n", sep = "")
+  print(tab1)
+  cat("\n")
+
+  cat("Bootstrap-based influence statistics (TAU2RATIO):\n", sep = "")
+  print(tab2)
+  cat("\n")
+
+  invisible(x)
+  
 }
 

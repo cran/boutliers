@@ -1,5 +1,7 @@
 STR <- function(y, v, method="REML", data=NULL, B=2000, alpha=0.95, seed=123456){
 
+	call <- match.call()
+
 	set.seed(seed)
 
 	if(is.null(data)==FALSE){
@@ -77,10 +79,43 @@ STR <- function(y, v, method="REML", data=NULL, B=2000, alpha=0.95, seed=123456)
 	}
 
 	id <- 1:n
-	R <- data.frame(id,psi,Q1,Q2)
-	R <- R[rev(order(abs(psi))),]
+	# R <- data.frame(id,psi,Q1,Q2)
+	# R <- R[rev(order(abs(psi))),]
 
-	return(R)
+	# return(R)
+	
+	res <- list(
+		call = call,
+		id = id,
+		psi  = psi,
+		Q1  = Q1,
+		Q2  = Q2
+		)
+	class(res) <- "STR"
+	return(res)
 
+}
+
+
+print.STR <- function(x, ...) {
+
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+
+  cat("Bootstrap-based influence statistics:\n", sep = "")
+
+  id  <- x$id
+  psi  <- x$psi
+  Q1  <- x$Q1
+  Q2  <- x$Q2
+
+  tab <- data.frame(id,psi,Q1,Q2)
+  tab <- tab[rev(order(abs(psi))),]
+
+  tab <- round(tab, 3)
+  print(tab)
+  invisible(x)
+  
 }
 

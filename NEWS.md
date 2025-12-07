@@ -1,3 +1,7 @@
+# boutliers 2.1-3 (2025-12-06)
+
+- Output styles are arranged.
+
 # boutliers 2.1-2 (2025-11-26)
 
 - Output styles are arranged.
